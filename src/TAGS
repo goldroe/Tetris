@@ -1,0 +1,88 @@
+
+c:/Dev/Tetris/src\net.cpp,32
+void net_test() {net_test5,57
+
+c:/Dev/Tetris/src\tetris.cpp,1520
+#define SUPPORT_RPRAND_GENERATORSUPPORT_RPRAND_GENERATOR12,337
+#define SCREEN_WIDTH SCREEN_WIDTH18,439
+#define SCREEN_HEIGHT SCREEN_HEIGHT19,466
+Texture2D tile_texture;tile_texture21,495
+Board make_board(int rows, int cols) {make_board23,522
+Cell *cell_at(Board board, int x, int y) {cell_at40,1010
+Cell *request_cell(Board board, int x, int y) {request_cell49,1235
+bool rotate_tetrad_L(Tetrad *tetrad, Board board) {rotate_tetrad_L58,1490
+bool rotate_tetrad_I(Tetrad *tetrad, Board board) {rotate_tetrad_I98,2850
+bool rotate_tetrad_J(Tetrad *tetrad, Board board) {rotate_tetrad_J140,4211
+bool rotate_tetrad_T(Tetrad *tetrad, Board board) {rotate_tetrad_T181,5570
+bool rotate_tetrad_S(Tetrad *tetrad, Board board) {rotate_tetrad_S222,6929
+bool rotate_tetrad_Z(Tetrad *tetrad, Board board) {rotate_tetrad_Z263,8288
+bool rotate_tetrad(Tetrad *tetrad, Board board) {rotate_tetrad304,9647
+bool make_tetrad(Tetrad *tetrad, Board board, TetradKind kind, int x, int y) {make_tetrad336,10442
+bool move_tetrad(Tetrad *tetrad, Board board, int dx, int dy) {move_tetrad409,12391
+bool row_is_full(Board board, int row) {row_is_full430,12877
+TetradKind random_tetrad() {random_tetrad440,13106
+void draw_cell(Cell cell, Vector2 board_start, Vector2 cell_size) {draw_cell445,13231
+void draw_board(Board board, Vector2 board_start, Vector2 cell_size) {draw_board457,13835
+void draw_tetrad(Tetrad tetrad, Vector2 board_start, Vector2 cell_size) {draw_tetrad476,14595
+int main() {main482,14782
+
+c:/Dev/Tetris/src\tetris.h,1713
+#define TETRIS_HTETRIS_H2,18
+typedef uint8_t  u8;u85,59
+typedef uint16_t u16;u166,81
+typedef uint32_t u32;u327,104
+typedef uint64_t u64;u648,127
+typedef int8_t  s8;s810,152
+typedef int16_t s16;s1611,173
+typedef int32_t s32;s3212,195
+typedef int64_t s64;s6413,217
+typedef float  f32;f3215,241
+typedef double f64;f6416,262
+#define for_array(for_array18,285
+    Yellow,Yellow22,395
+    Red,Red23,408
+    Green,Green24,418
+    Purple,Purple25,430
+    Orange,Orange26,443
+    Cyan,Cyan27,456
+    BlueBlue28,467
+struct Cell {Cell31,483
+    int x;x32,498
+    int x;Cell::x32,498
+    int y;y33,510
+    int y;Cell::y33,510
+    bool available;available34,522
+    bool available;Cell::available34,522
+    int color;color35,543
+    int color;Cell::color35,543
+struct Board {Board38,565
+    Cell *cells;cells39,581
+    Cell *cells;Board::cells39,581
+    int rows;rows40,599
+    int rows;Board::rows40,599
+    int cols;cols41,614
+    int cols;Board::cols41,614
+enum TetradKind {TetradKind44,635
+    Tetrad_I,Tetrad_I45,654
+    Tetrad_O,Tetrad_O46,669
+    Tetrad_J,Tetrad_J47,684
+    Tetrad_L,Tetrad_L48,699
+    Tetrad_S,Tetrad_S49,714
+    Tetrad_Z,Tetrad_Z50,729
+    Tetrad_T,Tetrad_T51,744
+    Tetrad_CountTetrad_Count53,761
+    LEFT,LEFT57,793
+    UP,UP58,804
+    RIGHT,RIGHT59,813
+    DOWNDOWN60,825
+struct Tetrad {Tetrad63,841
+    int x;x64,858
+    int x;Tetrad::x64,858
+    int y;y65,870
+    int y;Tetrad::y65,870
+    TetradKind kind;kind66,882
+    TetradKind kind;Tetrad::kind66,882
+    Cell cells[4];cells67,904
+    Cell cells[4];Tetrad::cells67,904
+    int dir;dir68,924
+    int dir;Tetrad::dir68,924
