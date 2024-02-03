@@ -42,6 +42,7 @@ struct Board {
 };
 
 enum TetradKind {
+    Tetrad_Invalid,
     Tetrad_I,
     Tetrad_O,
     Tetrad_J,
@@ -61,11 +62,18 @@ enum {
 };
 
 struct Tetrad {
+    TetradKind kind;
     int x;
     int y;
-    TetradKind kind;
     Cell cells[4];
     int dir;
+};
+
+enum GameMode {
+    GameMode_Menu,
+    GameMode_Playing,
+    GameMode_Paused,
+    GameMode_GameOver,
 };
 
 #endif // TETRIS_H

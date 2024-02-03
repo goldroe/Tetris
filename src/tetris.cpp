@@ -18,6 +18,8 @@
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 
+GameMode game_mode;
+
 Texture2D tile_texture;
 
 Board make_board(int rows, int cols) {
@@ -438,7 +440,7 @@ bool row_is_full(Board board, int row) {
 }
 
 TetradKind random_tetrad() {
-    TetradKind kind = (TetradKind)GetRandomValue(0, Tetrad_Count - 1);
+    TetradKind kind = (TetradKind)GetRandomValue(1, Tetrad_Count - 1);
     return kind;
 }
 
@@ -473,10 +475,14 @@ void draw_board(Board board, Vector2 board_start, Vector2 cell_size) {
     }
 }
 
-void draw_tetrad(Tetrad tetrad, Vector2 board_start, Vector2 cell_size) {
+void draw_tetrad(Tetrad tetrad, Vector2 start, Vector2 cell_size) {
     for_array(i, int, tetrad.cells) {
-        draw_cell(tetrad.cells[i], board_start, cell_size);
+        draw_cell(tetrad.cells[i], start, cell_size);
     }
+}
+
+void update_main_game_and_render() {
+
 }
 
 int main() {
@@ -492,6 +498,7 @@ int main() {
     Board board = make_board(20, 12);
 
     Tetrad tetrad{};
+    Tetrad hold_tetrad{};
     Tetrad next_tetrad{};
     make_tetrad(&tetrad, board, random_tetrad(), 5, 0);
     make_tetrad(&next_tetrad, board, random_tetrad(), 0, 0);
@@ -503,9 +510,26 @@ int main() {
     const float move_time = 0.50f;
     float move_timer = move_time;
 
+    int player_score = 0;
+
     SetRandomSeed((unsigned int)time(NULL));
 
+    game_mode = GameMode_Menu;
+
     while (!WindowShouldClose()) {
+
+        switch (game_mode) {
+        case GameMode_Menu:
+            break;
+        case GameMode_Paused:
+            break;
+        case GameMode_Playing:
+            update_main_game_and_render();
+            break;
+        case GameMode_GameOver:
+            break;
+        }
+
         // UPDATE
         if (IsKeyPressed(KEY_UP)) {
             rotate_tetrad(&tetrad, board);
@@ -519,19 +543,35 @@ int main() {
         if (IsKeyPressed(KEY_DOWN) || IsKeyPressedRepeat(KEY_DOWN)) {
             move_tetrad(&tetrad, board, 0, 1);
         }
+
+        // Place tetrad down
         if (IsKeyPressed(KEY_SPACE)) {
             // NOTE: Move till can't
             while (move_tetrad(&tetrad, board, 0, 1));
             PlaySound(place_sound);
         }
-        if (IsKeyPressed(KEY_SHIFT) && !tetrad_was_swapped) {
+
+        // Swap the held tetrad and the current one
+        if (IsKeyPressed(KEY_LEFT_SHIFT) && !tetrad_was_swapped) {
             tetrad_was_swapped = true;
             Tetrad t = tetrad;
-            tetrad = next_tetrad;
-            next_tetrad = t;
+            tetrad = hold_tetrad;
+            hold_tetrad = t;
+            // NOTE: No held tetrad so use new tetrad
+            if (tetrad.kind == Tetrad_Invalid) {
+                tetrad = next_tetrad;
+                move_tetrad(&tetrad, board, 5, 0);
+                make_tetrad(&next_tetrad, board, random_tetrad(), 0, 0);
+            }
+            int dx = 5 - tetrad.x;
+            int dy = -tetrad.y;
+            move_tetrad(&tetrad, board, dx, dy);
+            // NOTE: Reset to 0,0
+            move_tetrad(&hold_tetrad, board, -hold_tetrad.x, -hold_tetrad.y);
+            move_timer = move_time;
         }
 
-        // NOTE: Move tetrad
+        // Move tetrad
         move_timer -= GetFrameTime();
         if (move_timer <= 0.0f) {
             move_timer = move_time;
@@ -546,7 +586,6 @@ int main() {
                 tetrad_was_swapped = false;
                 tetrad = next_tetrad;
                 move_tetrad(&tetrad, board, 5, 0);
-                
                 make_tetrad(&next_tetrad, board, random_tetrad(), 0, 0);
             }
         }
@@ -560,6 +599,8 @@ int main() {
                         cell->available = above->available;
                         cell->color     = above->color;
                     }
+
+                    player_score += 10;
                 }
             }
         }
@@ -578,19 +619,31 @@ int main() {
         camera.zoom = 1.0f;
         BeginMode2D(camera);
 
+        // Draw main board and current tetrad
         Vector2 board_size = {board.cols * cell_size.x, board.rows * cell_size.y};
         Vector2 board_start = {width/2.0f - board_size.x/2.0f, (height - board_size.y)/2.0f};
         draw_board(board, board_start, cell_size);
         draw_tetrad(tetrad, board_start, cell_size);
 
+        // Draw held tetrad
+        Vector2 held_start = {0.25f*board_start.x, 0.0f};
+        Vector2 held_box_size = {100.0f, 100.0f};
+        if (hold_tetrad.kind != Tetrad_Invalid) {
+            draw_tetrad(hold_tetrad, held_start, held_box_size);
+        }
+        
+        // Draw next tetrad(s)
         Vector2 next_box_size = { width - 1.10f * (board_start.x + board_size.x), height / 2.0f };
         Vector2 next_box_start = {1.10f * (board_start.x + board_size.x), height / 2.0f };
         // Vector2 next_box_start = {1000.0f, 200.0f};
         Vector2 next_size = {next_box_size.x/8.0f, next_box_size.x/8.0f};
         draw_tetrad(next_tetrad, next_box_start, next_size);
 
+        char score_text[10];
+        snprintf(score_text, sizeof(score_text), "%d", player_score);
+        DrawText(score_text, 0, 0, 40, WHITE);
+
         EndMode2D();
-        
         EndDrawing();
     }
     
