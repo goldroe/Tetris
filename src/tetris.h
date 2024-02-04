@@ -74,6 +74,21 @@ enum GameMode {
     GameMode_Playing,
     GameMode_Paused,
     GameMode_GameOver,
+    GameMode_Quit,
+};
+
+struct GameState {
+    GameMode mode;
+
+    int player_score;
+    Board board;
+    Tetrad tetrad;
+    Tetrad next_tetrad;
+    Tetrad held_tetrad;
+    bool tetrad_swapped;
+
+    float move_timer;
+    float move_t;
 };
 
 #endif // TETRIS_H
